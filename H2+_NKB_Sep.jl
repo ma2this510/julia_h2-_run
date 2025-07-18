@@ -502,16 +502,16 @@ function main_run(R)
 
     # # println("Eigenvalues saved to eigenvalues.txt")
 
-    first_state_energy = data[data[:, 3].==1, 2][1]
+    first_state_energy = data[data[:, 3].==1, 2][1:3]
 
     # println("First Bound State Energy: ", first_state_energy)
-    return R, first_state_energy
+    return R, first_state_energy...
 end
 
 result = DataFrame(collect(ThreadsX.map(main_run, R_list)))
 
 plt = plot(
-    result[:, 1], real(result[:, 2]);
+    result[:, 1], real(result[:, 2]) + 1 ./ R_list;
     label="First Bound State Energy",
     xlabel="Internuclear Distance R",
     ylabel="Energy (a.u.)",
@@ -519,10 +519,7 @@ plt = plot(
     title="First Bound State Energy vs Internuclear Distance",
     linewidth=2,
 )
-plot!(
-    result[:, 1], real(result[:, 2]) + 1 ./ R_list;
-    label="First Bound State Energy + 1/R",
-    linewidth=2,
-)
-ylims!(-1.5, 0)
-savefig("first_bound_state_energy_vs_R.png")
+plot!(plt, result[:, 1], real(result[:, 3]) + 1 ./ R_list; label="Second Bound State Energy", linewidth=2)
+plot!(plt, result[:, 1], real(result[:, 4]) + 1 ./ R_list; label="Third Bound State Energy", linewidth=2)
+ylims!(plt, -1, 1)
+savefig(plt, "bound_state_energy_vs_R.png")
